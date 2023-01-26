@@ -4,15 +4,14 @@
 # /transaction/new : 새 트랜잭션 생성
 # /mine : server에게 새 블록 채굴 요청
 
-from flask import Flask, request, jsonify
+
 import json
+from flask import Flask, jsonify
 from time import time
 from textwrap import dedent
 from uuid import uuid4
 
-
 from blockchain import Blockchain
-
 
     
 app = Flask(__name__)

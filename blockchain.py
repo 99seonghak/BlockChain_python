@@ -31,7 +31,7 @@
 import hashlib # 해시의 sha256 사용 가능
 import json
 from time import time
-from urlparse import urlparse
+from urllib.parse import urlparse
 import requests
 # 먼저 함수 지정 (함수의 형태만 크게 잡아보자!)
 # JSON 형태로 유용하게 저장
