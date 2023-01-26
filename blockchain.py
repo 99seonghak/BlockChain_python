@@ -1,7 +1,11 @@
 # https://github.com/dovishwisdom/wisdom_coin
 #
+# Hackernoon의 Daniel Van Flymen 코드를 리뷰
 # 먼저 python으로 블록체인을 구현하기 전에 
 # 블록체인 구조를 알아보기
+# 파이썬 언어
+# 리눅스 환경
+# 파이썬 2.7 이상
 
 # 블록체인의 구조?
 # 최초의 블록부터 시작해 바로 앞의 블록에 대한 링크를 가지고 있는 형태
@@ -24,7 +28,7 @@
 # 블록체인 blockchain.py - 블록구조들, 트랜잭션의 형태, chain과 연결법이 있음
 # 서버 server.py - Flask를 사용해 웹의 형태 개발 (이렇게 짠 블록들을 어떻게 나눠줄지, Flask를 사용해서 웹페이지에 뿌림)
 
-import hashlib
+import hashlib # 해시의 sha256 사용 가능
 import json
 from time import time
 from urlparse import urlparse
@@ -37,13 +41,13 @@ import requests
 class Blockchain(object):
 ## __init__: 클래스의 생성자{Constructor},
 # 가장 먼저 Blockchain 객체를 만들면 해당 함수가 무조건 먼저 실행되어짐
-''' 블록을 저장한 공간 생성 및  트랜잭션 임시공간 생성 '''
+# ''' 블록을 저장한 공간 생성 및  트랜잭션 임시공간 생성 '''
     def __init__(self):
         self.chain = [] # 블록체인, 블록이 하나씩 들어감 배열형태로 저장
         self.current_transaction = [] # 임시 트랜잭션이 들어감, Alice가 bob에게 얼마를 줬다 거래내역
     
         # genesis block 첫번째 블록, 가장 첫번째 블록에 hash를 지정해두고
-        self.new_block(previous_hash= 1, proof=100)
+        self.new_block(previous_hash= 1, proof=100)  # Genesis block 생성
     
     # new_block 함수 생성 [사전 형태로 작성, key, value의 쌍]
     def new_block(self, proof, previous_hash=None):
@@ -55,13 +59,13 @@ class Blockchain(object):
             'previous_hash' : previous_hash or self.hash(self.chain[-1])
             }
         self.current_transaction = []
-        self.chain.append(block)
+        self.chain.append(block) # chain에 블록을 삽입
         return block
 
     # 거래 추가 구조
     # new_Transaction을 하고 새로운 마인을 하면 그때 다음 블록의 Transaction이 들어가는 형태
     def new_transaction(self, sender, recipient, amount):
-        self.current_transaction.append(
+        self.current_transaction.append( # current_transaction에 트랜잭션 내용 삽입
             {
                 'sender' : sender, # 송신자
                 'recipient' : recipient, # 수신자
@@ -76,14 +80,15 @@ class Blockchain(object):
         # 해시라는 함수를 어떨때 직접 짜냐? - json형태로 뽑혀진 블록을 전체 해쉬하기 위해서!
         return hashlib.sha256(block_string).hexdigest() # 무결성 체크하며 저장
 
+    # 작업증명
     # 전 proof p와 현재 구해야할 proof p' hash[p+p']의 앞 4자리 == "0000" 이러한 p'를 구함
-    def pow(self, lost_proof):
+    def pow(self, last_proof):
         proof = 0
         while self.valid_proof(last_proof, proof) is False: # 전 proof와 현재 기존 proof 합이 False일 때 까지 반복.
             proof += 1 # proof를 증가시킴.
             return proof # 찾으면 proof 반환.
 
-    def valied_proof(last_proof,proof):
+    def valied_proof(last_proof,proof): # 앞의 4자리가 0000을 찾는 함수
         guess = str(last_proof + proof).encode() # 전 proof와 다음 proof 문자열 연결
         guess_hash = hashlib.sha256(guess).hexdigest() # 이 hash값 저장
         return guess_hash[:4] == "0000" # nonce 앞 4자리가 "0000"이면 True
